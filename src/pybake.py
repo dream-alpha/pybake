@@ -141,7 +141,7 @@ def main(argv):
 	os.system("rm -rf " + debdir)
 	os.system("mkdir " + debdir)
 	os.system("mkdir " + debdir + "/DEBIAN")
-	os.system("cp " + gitdir + "/CONTROL/control " + debdir + "/DEBIAN")
+	os.system("cp " + gitdir + "/CONTROL/* " + debdir + "/DEBIAN")
 
 	process_maks(gitdir, debdir)
 	produce_deb_pkg(gitdir, debdir, pkgloc)
