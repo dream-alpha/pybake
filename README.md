@@ -11,7 +11,7 @@ Parses the .mak files in `git_root_dir` and generates a deb package.
 - `pkg_loc` is the directory where the package file will be placed.
 
 ## Pre-Requisite: 
-A `git_root_dir/CONTORL/control` file is required with the following minimum content:
+A `git_root_dir/CONTROL/control` file is required with the following minimum content:
 - Package: enigma2-plugin-extensions-`plugin_name`
 - Version: `x.x`
 - Architecture: `architecture`
