@@ -4,7 +4,7 @@
 ## Usage: 
 - python pybake.py -i `git_root_dir` -o `pkg_root_dir` -p `pkg_loc`
 
-## Descripiton: 
+## Description: 
 Parses the .mak files in `git_root_dir` and generates a deb package.
 - `git_root_dir` specifies the directory where the git source files are.
 - `pkg_root_dir` specifies the directory where the structure for the package file will be built.
