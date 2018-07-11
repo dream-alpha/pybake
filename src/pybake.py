@@ -28,8 +28,30 @@ def readFile(filename):
 	file.close()
 	return data
 
-def process(gitdir, debdir):
-	print("=====> process: " + gitdir)
+def produce_deb_pkg(gitdir, debdir, pkgloc):
+	print("Producing deb package...")
+	pkg = ""
+	version = ""
+	arch = ""
+	lines = readFile(gitdir + "/CONTROL/control").splitlines()
+	for line in lines:
+		if line.find("Package:") == 0:
+			pkg = line.split(" ")[1]
+		if line.find("Version:") == 0:
+			version = line.split(" ")[1]
+		if line.find("Architecture:") == 0:
+			arch = line.split(" ")[1]
+
+	if pkg and version and arch:
+		pkg_name = pkg + "_" + version + "_" + arch + ".deb"
+		print(pkg_name)
+
+		os.system("dpkg-deb -b -z2 " + debdir)
+		print("Deb package created: " + pkgloc + "/" + pkg_name)
+		os.system("mv " + debdir + ".deb " + pkgloc + "/" + pkg_name)
+
+def process_maks(gitdir, debdir):
+	print("=====> process_maks: " + gitdir)
 	installdir = ""
 	install_PYTHON = ""
 	install_DATA = ""
@@ -63,7 +85,7 @@ def process(gitdir, debdir):
 				subdirs = list(set(line.split(" ")) - set(["SUBDIRS", "="]))
 				print(gitdir + " >>> " + "SUBDIRS = " + str(subdirs))
 				for subdir in subdirs:
-					process(gitdir + "/" + subdir, debdir)
+					process_maks(gitdir + "/" + subdir, debdir)
 
 			if line.find("installdir = ") == 0:
 				installdir = line.split(" ")[2]
@@ -87,37 +109,44 @@ def process(gitdir, debdir):
 			for file in install_DATA:
 				os.system("cp " + gitdir + "/" + file + " " + debdir + installdir)
 		
-	print("<===== process: " + gitdir)
+	print("<===== process_maks: " + gitdir)
 
 def main(argv):
-	print("Hello World!")
+	print("pybake version 0.1")
 	gitdir = ''
 	debdir = ''
+	pkgloc = ''
+
 	try:
-		opts, args = getopt.getopt(argv,"hi:o:",["gitdir=","debdir="])
+		opts, args = getopt.getopt(argv,"hi:o:p:", ["gitdir=", "debdir=", "pkgloc="])
 	except getopt.GetoptError:
-		print 'plugbake.py -i <gitdir> -o <debdir>'
+		print 'plugbake.py -i <gitdir> -o <debdir> -p <pkgloc>'
 		sys.exit(2)
 
 	for opt, arg in opts:
 		if opt == '-h':
-			print 'plugbake.py -i <gitdir> -o <debdir>'
+			print 'plugbake.py -i <gitdir> -o <debdir> -p <pkgloc>'
 			sys.exit()
 		elif opt in ("-i", "--gitdir"):
 			gitdir = arg
 		elif opt in ("-o", "--debdir"):
 			debdir = arg
-			print('Git dir is: ' + gitdir)
-			print('Deb dir is: ' + debdir)
+		elif opt in ("-p", "--pkgdir"):
+			pkgloc = arg
+
+	print('Git dir is: ' + gitdir)
+	print('Deb dir is: ' + debdir)
+	print('Pkg dir is: ' + pkgloc)
 
 	os.system("rm -rf " + debdir)
 	os.system("mkdir " + debdir)
 	os.system("mkdir " + debdir + "/DEBIAN")
 	os.system("cp " + gitdir + "/CONTROL/control " + debdir + "/DEBIAN")
 
-	process(gitdir, debdir)
+	process_maks(gitdir, debdir)
+	produce_deb_pkg(gitdir, debdir, pkgloc)
 	
-	print("Goodbye World!")
+	print("pybake done.")
 
 if __name__ == "__main__":
 	main(sys.argv[1:])
