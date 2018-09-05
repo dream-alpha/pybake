@@ -19,7 +19,10 @@
 #	<http://www.gnu.org/licenses/>.
 #
 
-import os, sys, getopt
+import os
+import sys
+import getopt
+
 LIBDIR = "/usr/lib"
 
 def readFile(filename):
@@ -28,7 +31,7 @@ def readFile(filename):
 	file.close()
 	return data
 
-def produce_deb_pkg(gitdir, debdir, pkgloc):
+def produce_deb_pkg(gitdir, debdir, pkgdir):
 	print("Producing deb package...")
 	pkg = ""
 	version = ""
@@ -47,8 +50,8 @@ def produce_deb_pkg(gitdir, debdir, pkgloc):
 		print(pkg_name)
 
 		os.system("dpkg-deb -b -z2 " + debdir)
-		print("Deb package created: " + pkgloc + "/" + pkg_name)
-		os.system("mv " + debdir + ".deb " + pkgloc + "/" + pkg_name)
+		print("Deb package created: " + pkgdir + "/" + pkg_name)
+		os.system("mv " + debdir + ".deb " + pkgdir + "/" + pkg_name)
 
 def process_maks(gitdir, debdir):
 	print("=====> process_maks: " + gitdir)
@@ -108,35 +111,37 @@ def process_maks(gitdir, debdir):
 			os.system("mkdir -p " + debdir + installdir)
 			for file in install_DATA:
 				os.system("cp " + gitdir + "/" + file + " " + debdir + installdir)
-		
+
 	print("<===== process_maks: " + gitdir)
 
 def main(argv):
-	print("pybake version 0.1")
+	print("pybake version 0.2")
 	gitdir = ''
 	debdir = ''
-	pkgloc = ''
+	pkgdir = ''
 
 	try:
-		opts, args = getopt.getopt(argv,"hi:o:p:", ["gitdir=", "debdir=", "pkgloc="])
-	except getopt.GetoptError:
-		print 'plugbake.py -i <gitdir> -o <debdir> -p <pkgloc>'
+		opts, args = getopt.getopt(argv, "hi:o:", ["gitdir=", "pkgdir="])
+	except getopt.GetoptError as e:
+		print("Error: " + str(e))
+
+	if len(opts) < 2:
+		print('Usage: python pybake.py -i <gitdir> -o <pkgdir>')
 		sys.exit(2)
 
 	for opt, arg in opts:
-		if opt == '-h':
-			print 'plugbake.py -i <gitdir> -o <debdir> -p <pkgloc>'
-			sys.exit()
-		elif opt in ("-i", "--gitdir"):
-			gitdir = arg
-		elif opt in ("-o", "--debdir"):
-			debdir = arg
-		elif opt in ("-p", "--pkgdir"):
-			pkgloc = arg
+		if opt in ("-i", "--gitdir"):
+			gitdir = os.path.normpath(arg)
+		elif opt in ("-o", "--pkgdir"):
+			pkgdir = os.path.normpath(arg)
 
 	print('Git dir is: ' + gitdir)
-	print('Deb dir is: ' + debdir)
-	print('Pkg dir is: ' + pkgloc)
+	print('Pkg dir is: ' + pkgdir)
+	debdir = pkgdir + "/debroot"
+
+	if not os.path.isfile(gitdir + "/CONTROL/control"):
+		print(gitdir + "/CONTROL/control file does not exist, exiting...")
+		sys.exit(2)
 
 	os.system("rm -rf " + debdir)
 	os.system("mkdir " + debdir)
@@ -144,8 +149,8 @@ def main(argv):
 	os.system("cp " + gitdir + "/CONTROL/* " + debdir + "/DEBIAN")
 
 	process_maks(gitdir, debdir)
-	produce_deb_pkg(gitdir, debdir, pkgloc)
-	
+	produce_deb_pkg(gitdir, debdir, pkgdir)
+
 	print("pybake done.")
 
 if __name__ == "__main__":
