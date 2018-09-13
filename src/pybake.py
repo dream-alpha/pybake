@@ -32,7 +32,7 @@ def readFile(filename):
 	return data
 
 def produce_deb_pkg(gitdir, debdir, pkgdir):
-	print("Producing deb package...")
+	#print("Producing deb package...")
 	pkg = ""
 	version = ""
 	arch = ""
@@ -47,14 +47,14 @@ def produce_deb_pkg(gitdir, debdir, pkgdir):
 
 	if pkg and version and arch:
 		pkg_name = pkg + "_" + version + "_" + arch + ".deb"
-		print(pkg_name)
+		#print(pkg_name)
 
 		os.system("dpkg-deb -b -z2 " + debdir)
-		print("Deb package created: " + pkgdir + "/" + pkg_name)
+		#print("Deb package created: " + pkgdir + "/" + pkg_name)
 		os.system("mv " + debdir + ".deb " + pkgdir + "/" + pkg_name)
 
 def process_maks(gitdir, debdir):
-	print("=====> process_maks: " + gitdir)
+	#print("=====> process_maks: " + gitdir)
 	installdir = ""
 	install_PYTHON = ""
 	install_DATA = ""
@@ -67,13 +67,13 @@ def process_maks(gitdir, debdir):
 			if line.find("installdir = ") == 0:
 				installdir = line.split(" ")[2]
 				installdir = installdir.replace("$(libdir)", LIBDIR)
-				print(gitdir + " >>> " + "installdir = " + installdir)
+				#print(gitdir + " >>> " + "installdir = " + installdir)
 			if line.find("DOMAIN = ") == 0:
 				domain = line.split(" ")[2]
-				print(gitdir + " >>> " + "domain = " + domain)
+				#print(gitdir + " >>> " + "domain = " + domain)
 			if line.find("LANGS := ") == 0:
 				langs = list(set(line.split(" ")) - set(["LANGS", ":="]))
-				print(gitdir + " >>> " + "LANGS = " + str(langs))
+				#print(gitdir + " >>> " + "LANGS = " + str(langs))
 
 		installdir = installdir.replace("$(DOMAIN)", domain)
 
@@ -86,22 +86,22 @@ def process_maks(gitdir, debdir):
 		for line in lines:
 			if line.find("SUBDIRS = ") == 0:
 				subdirs = list(set(line.split(" ")) - set(["SUBDIRS", "="]))
-				print(gitdir + " >>> " + "SUBDIRS = " + str(subdirs))
+				#print(gitdir + " >>> " + "SUBDIRS = " + str(subdirs))
 				for subdir in subdirs:
 					process_maks(gitdir + "/" + subdir, debdir)
 
 			if line.find("installdir = ") == 0:
 				installdir = line.split(" ")[2]
 				installdir = installdir.replace("$(libdir)", LIBDIR)
-				print(gitdir + " >>> " + "installdir = " + installdir)
+				#print(gitdir + " >>> " + "installdir = " + installdir)
 
 			if line.find("install_PYTHON") == 0:
 				install_PYTHON = list(set(line.split(" ")) - set(["install_PYTHON", "="]))
-				print(gitdir + " >>> " + "install_PYTHON = " + str(install_PYTHON))
+				#print(gitdir + " >>> " + "install_PYTHON = " + str(install_PYTHON))
 
 			if line.find("install_DATA") == 0:
 				install_DATA = list(set(line.split(" ")) - set(["install_DATA", "="]))
-				print(gitdir + " >>> " + "install_DATA = " + str(install_DATA))
+				#print(gitdir + " >>> " + "install_DATA = " + str(install_DATA))
 
 		if installdir and install_PYTHON:
 			os.system("mkdir -p " + debdir + installdir)
@@ -112,10 +112,10 @@ def process_maks(gitdir, debdir):
 			for file in install_DATA:
 				os.system("cp " + gitdir + "/" + file + " " + debdir + installdir)
 
-	print("<===== process_maks: " + gitdir)
+	#print("<===== process_maks: " + gitdir)
 
 def main(argv):
-	print("pybake version 0.2")
+	print("pybake version 0.3")
 	gitdir = ''
 	debdir = ''
 	pkgdir = ''
@@ -135,8 +135,8 @@ def main(argv):
 		elif opt in ("-o", "--pkgdir"):
 			pkgdir = os.path.normpath(arg)
 
-	print('Git dir is: ' + gitdir)
-	print('Pkg dir is: ' + pkgdir)
+	print('git dir is: ' + gitdir)
+	print('pkg dir is: ' + pkgdir)
 	debdir = pkgdir + "/debroot"
 
 	if not os.path.isfile(gitdir + "/CONTROL/control"):
@@ -148,6 +148,7 @@ def main(argv):
 	os.system("mkdir " + debdir + "/DEBIAN")
 	os.system("cp " + gitdir + "/CONTROL/* " + debdir + "/DEBIAN")
 
+	print("processing MAKs...")
 	process_maks(gitdir, debdir)
 	produce_deb_pkg(gitdir, debdir, pkgdir)
 
