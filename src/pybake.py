@@ -26,9 +26,9 @@ import getopt
 LIBDIR = "/usr/lib"
 
 def readFile(filename):
-	file = open(filename)
-	data = file.read().strip()
-	file.close()
+	afile = open(filename)
+	data = afile.read().strip()
+	afile.close()
 	return data
 
 def produce_deb_pkg(gitdir, debdir, pkgdir):
@@ -105,12 +105,12 @@ def process_maks(gitdir, debdir):
 
 		if installdir and install_PYTHON:
 			os.system("mkdir -p " + debdir + installdir)
-			for file in install_PYTHON:
-				os.system("cp " + gitdir + "/" + file + " " + debdir + installdir)
+			for afile in install_PYTHON:
+				os.system("cp " + gitdir + "/" + afile + " " + debdir + installdir)
 		if installdir and install_DATA:
 			os.system("mkdir -p " + debdir + installdir)
-			for file in install_DATA:
-				os.system("cp " + gitdir + "/" + file + " " + debdir + installdir)
+			for afile in install_DATA:
+				os.system("cp " + gitdir + "/" + afile + " " + debdir + installdir)
 
 	#print("<===== process_maks: " + gitdir)
 
@@ -121,7 +121,7 @@ def main(argv):
 	pkgdir = ''
 
 	try:
-		opts, args = getopt.getopt(argv, "hi:o:", ["gitdir=", "pkgdir="])
+		opts, _args = getopt.getopt(argv, "hi:o:", ["gitdir=", "pkgdir="])
 	except getopt.GetoptError as e:
 		print("Error: " + str(e))
 
