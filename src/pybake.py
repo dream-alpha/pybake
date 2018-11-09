@@ -121,7 +121,7 @@ def main(argv):
 	pkgdir = ''
 
 	try:
-		opts, args = getopt.getopt(argv, "hi:o:", ["gitdir=", "pkgdir="])
+		opts, _args = getopt.getopt(argv, "hi:o:", ["gitdir=", "pkgdir="])
 	except getopt.GetoptError as e:
 		print("Error: " + str(e))
 
