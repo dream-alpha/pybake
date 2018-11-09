@@ -14,3 +14,5 @@ A `git_root_dir/CONTROL/control` file is required with the following minimum con
 - Package: enigma2-plugin-extensions-`plugin_name`
 - Version: `x.x`
 - Architecture: `architecture`
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/b2c0376956f340f1b5532dec6f4abb73)](https://www.codacy.com/app/swmaniacster/pybake?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=dream-alpha/pybake&amp;utm_campaign=Badge_Grade)
