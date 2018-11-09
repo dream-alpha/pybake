@@ -1,4 +1,7 @@
 # pybake
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/e219eac8afb04551b06a7dfc2465af4a)](https://app.codacy.com/app/swmaniacster/pybake?utm_source=github.com&utm_medium=referral&utm_content=dream-alpha/pybake&utm_campaign=Badge_Grade_Settings)
+
 ## A simple package build tool for python enigma2 plugins
 
 ## Usage 
