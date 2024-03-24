@@ -1,0 +1,9 @@
+#!/bin/bash
+gitrootdir="$1"
+pkgdir="$2"
+
+if [ -z "$1" ] || [ -z "$2" ]; then
+	echo "Usage: $0 <git root dir> <package dir>"
+else
+	python "$(dirname "$0")"/src/debbake.py -i $gitrootdir -o $pkgdir
+fi
